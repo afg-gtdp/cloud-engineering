@@ -117,8 +117,8 @@
         "containerSubnetName": "aci",
         "appServicePlan": "[concat(parameters('forwarderName'),'-plan')]",
         "functionName": "[concat(parameters('forwarderName'),'-function')]",
-		"forwarderNameShort": "[take(parameters('forwarderName'), 18)]",
-		"randomIdToMakeStorageAccountGloballyUnique": "[substring(uniqueString(parameters('forwarderName'), resourceGroup().id), 0, 4)]",
+        "forwarderNameShort": "[take(parameters('forwarderName'), 18)]",
+        "randomIdToMakeStorageAccountGloballyUnique": "[substring(uniqueString(parameters('forwarderName'), resourceGroup().id), 0, 4)]",
         "storageAccountName": "[concat(variables('forwarderNameShort'), 'sa', variables('randomIdToMakeStorageAccountGloballyUnique'))]",
         "virtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
         "functionSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('functionSubnetName'))]",
@@ -197,7 +197,9 @@
             "name": "[variables('networkProfileName')]",
             "type": "Microsoft.Network/networkProfiles",
             "condition": "[parameters('deployActiveGateContainer')]",
-            "dependsOn": [ "[variables('containerSubnetId')]" ],
+            "dependsOn": [
+                "[variables('containerSubnetId')]"
+            ],
             "apiVersion": "2020-05-01",
             "location": "[resourceGroup().location]",
             "tags": "[parameters('resourceTags')]",
@@ -224,7 +226,9 @@
         {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "apiVersion": "2019-12-01",
-            "dependsOn": [ "[variables('networkProfileId')]" ],
+            "dependsOn": [
+                "[variables('networkProfileId')]"
+            ],
             "condition": "[parameters('deployActiveGateContainer')]",
             "name": "[parameters('forwarderName')]",
             "location": "[resourceGroup().location]",
@@ -233,12 +237,10 @@
                 "sku": "Standard",
                 "networkProfile": {
                     "id": "[variables('networkProfileId')]"
-
                 },
                 "containers": [
                     {
                         "name": "[parameters('forwarderName')]",
-
                         "properties": {
                             "image": "[variables('image')]",
                             "ports": [
@@ -274,7 +276,6 @@
                                     "memoryInGB": 1,
                                     "cpu": 1
                                 }
-
                             }
                         }
                     }
@@ -448,7 +449,7 @@
                         {
                             "name": "REGION",
                             "value": "[resourceGroup().location]"
-                        },                        
+                        },
                         {
                             "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
                             "value": "true"
@@ -475,7 +476,7 @@
                         },
                         {
                             "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
-                            "value": "false"	    
+                            "value": "false"
                         }
                     ]
                 },
@@ -490,7 +491,6 @@
             },
             "resources": [
                 {
-                    // vnet integration for linux function: https://github.com/MicrosoftDocs/azure-docs/issues/43302#issuecomment-578157842
                     "name": "virtualNetwork",
                     "type": "config",
                     "apiVersion": "2018-02-01",
@@ -592,6 +592,5 @@
             ]
         }
     ],
-    "outputs": {
-    }
+    "outputs": {}
 }
