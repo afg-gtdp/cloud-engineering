@@ -115,11 +115,11 @@
         "virtualNetworkName": "[concat(parameters('forwarderName'),'-vnet')]",
         "functionSubnetName": "functionapp",
         "containerSubnetName": "aci",
-        "appServicePlan": "[concat(parameters('forwarderName'),'-plan')]",
-        "functionName": "[concat(parameters('forwarderName'),'-function')]",
-        "forwarderNameShort": "[take(parameters('forwarderName'), 18)]",
-        "randomIdToMakeStorageAccountGloballyUnique": "[substring(uniqueString(parameters('forwarderName'), resourceGroup().id), 0, 4)]",
-        "storageAccountName": "[concat(variables('forwarderNameShort'), 'sa', variables('randomIdToMakeStorageAccountGloballyUnique'))]",
+        "appServicePlan": "asp-corp-blue-ai-obs-poc-dev",
+        "functionName": "func-corp-blue-ai-obs-poc-dev",
+		"forwarderNameShort": "[take(parameters('forwarderName'), 18)]",
+		"randomIdToMakeStorageAccountGloballyUnique": "[substring(uniqueString(parameters('forwarderName'), resourceGroup().id), 0, 4)]",
+        "storageAccountName": "afgstcorpblueaipocdev",
         "virtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
         "functionSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('functionSubnetName'))]",
         "containerSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('containerSubnetName'))]",
@@ -197,9 +197,7 @@
             "name": "[variables('networkProfileName')]",
             "type": "Microsoft.Network/networkProfiles",
             "condition": "[parameters('deployActiveGateContainer')]",
-            "dependsOn": [
-                "[variables('containerSubnetId')]"
-            ],
+            "dependsOn": [ "[variables('containerSubnetId')]" ],
             "apiVersion": "2020-05-01",
             "location": "[resourceGroup().location]",
             "tags": "[parameters('resourceTags')]",
@@ -226,9 +224,7 @@
         {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "apiVersion": "2019-12-01",
-            "dependsOn": [
-                "[variables('networkProfileId')]"
-            ],
+            "dependsOn": [ "[variables('networkProfileId')]" ],
             "condition": "[parameters('deployActiveGateContainer')]",
             "name": "[parameters('forwarderName')]",
             "location": "[resourceGroup().location]",
@@ -237,10 +233,12 @@
                 "sku": "Standard",
                 "networkProfile": {
                     "id": "[variables('networkProfileId')]"
+
                 },
                 "containers": [
                     {
                         "name": "[parameters('forwarderName')]",
+
                         "properties": {
                             "image": "[variables('image')]",
                             "ports": [
@@ -276,6 +274,7 @@
                                     "memoryInGB": 1,
                                     "cpu": 1
                                 }
+
                             }
                         }
                     }
@@ -294,7 +293,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2020-08-01-preview",
-            "name": "afgstcorpblueaipocdev",
+            "name": "[variables('storageAccountName')]",
             "location": "[resourceGroup().location]",
             "tags": "[parameters('resourceTags')]",
             "dependsOn": [
@@ -353,7 +352,7 @@
         {
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2018-02-01",
-            "name": "asp-corp-blue-ai-obs-poc-dev",
+            "name": "[variables('appServicePlan')]",
             "location": "[resourceGroup().location]",
             "tags": "[parameters('resourceTags')]",
             "sku": {
@@ -378,7 +377,7 @@
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2018-11-01",
-            "name": "func-corp-blue-ai-obs-poc-dev",
+            "name": "[variables('functionName')]",
             "dependsOn": [
                 "[variables('appServicePlanId')]",
                 "[variables('functionSubnetId')]"
@@ -449,7 +448,7 @@
                         {
                             "name": "REGION",
                             "value": "[resourceGroup().location]"
-                        },
+                        },                        
                         {
                             "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
                             "value": "true"
@@ -476,7 +475,7 @@
                         },
                         {
                             "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
-                            "value": "false"
+                            "value": "false"	    
                         }
                     ]
                 },
@@ -592,5 +591,6 @@
             ]
         }
     ],
-    "outputs": {}
+    "outputs": {
+    }
 }
